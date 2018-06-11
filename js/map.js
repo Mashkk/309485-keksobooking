@@ -18,6 +18,12 @@ var maxRooms = 5;
 var minAvatarCount = 1;
 var maxAvatarCount = 8;
 
+var map = document.querySelector('.map');
+var mapPins = document.querySelector('.map__pins');
+var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
+var fragment = document.createDocumentFragment();
+var filterContainer = document.querySelector('.map__filters-container');
+
 // Константы
 var PIN_HEIGHT = 70;
 var PIN_WIDTH = 50 / 2;
@@ -43,12 +49,12 @@ var getRandomNumber = function (min, max) {
 };
 
 var shuffleArray = function (arr) {
-  var j;
+  var container;
   var temp;
   for (var i = arr.length - 1; i > 0; i--) {
-    j = Math.floor(Math.random() * (i + 1));
-    temp = arr[j];
-    arr[j] = arr[i];
+    container = Math.floor(Math.random() * (i + 1));
+    temp = arr[container];
+    arr[container] = arr[i];
     arr[i] = temp;
   }
   return arr;
@@ -57,13 +63,8 @@ var shuffleArray = function (arr) {
 // генератор для ав
 var generateAvatar = function (min, max) {
   var result = [];
-
   for (var i = min; i <= max; i++) {
-    if (i < 10 && i > 0) {
-      result.push('0' + i);
-    } else {
-      result.push(i + '');
-    }
+    result.push(i);
   }
   return result;
 };
@@ -79,7 +80,8 @@ for (var i = 0; i < adCount; i++) {
   adAround.push(
       {
         author: {
-          avatar: 'img/avatars/user' + getRandom(avatarOpt, true) + '.png'
+          // Оставила такую запись, тк там еще надо что бы не было повторений в цифрах.
+          avatar: 'img/avatars/user0' + getRandom(avatarOpt, true) + '.png'
         },
 
         offer: {
@@ -91,7 +93,7 @@ for (var i = 0; i < adCount; i++) {
           guests: getRandomNumber(1, 15),
           checkin: getRandom(checkinOpt),
           checkout: getRandom(checkoutOpt),
-          features: featuresOpt.splice(getRandomNumber(1, featuresOpt.length - 1)),
+          features: featuresOpt.splice(getRandomNumber(0, featuresOpt.length - 1)),
           description: '',
           photos: shuffleArray(photosOpt)
         },
@@ -105,13 +107,9 @@ for (var i = 0; i < adCount; i++) {
 }
 
 // Переключение карты в интерактивное состояние
-var map = document.querySelector('.map');
 map.classList.remove('map--faded');
 
 // Отрисовка пинов на карте
-var mapPins = document.querySelector('.map__pins');
-var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
-
 var renderPin = function (pin) {
   var pinElement = mapPinTemplate.cloneNode(true);
   var pinLocationX = pin.location.x - PIN_WIDTH;
@@ -125,11 +123,13 @@ var renderPin = function (pin) {
   return pinElement;
 };
 
-var fragment = document.createDocumentFragment();
-for (i = 0; i < adAround.length; i++) {
-  fragment.appendChild(renderPin(adAround[i]));
-}
-mapPins.appendChild(fragment);
+var createFragment = function (renderArr, workArr, direct) {
+  for (i = 0; i < adAround.length; i++) {
+    fragment.appendChild(renderArr(workArr[i]));
+  }
+  direct.appendChild(fragment);
+};
+createFragment(renderPin, adAround, mapPins);
 
 // Заполнение объявления
 var mapCard = document.querySelector('.map');
@@ -137,8 +137,18 @@ var mapCardTemplate = document.querySelector('template').content.querySelector('
 
 var renderCard = function (card) {
   var cardElement = mapCardTemplate.cloneNode(true);
-  var cardOfferType = cardElement.querySelector('.popup__type');
   var cardPhoto = cardElement.querySelector('.popup__photo');
+  var l10nTypeOffer = {
+    'flat': 'Квартира',
+    'palace': 'Дворец',
+    'house': 'Дом',
+    'bungalo': 'Бунгало'
+  };
+
+  var cardOfferFeaturesArray = cardElement.querySelectorAll('.popup__feature');
+  var cardOfferFeatures = cardElement.querySelector('.popup__features');
+
+  var photosContainer = cardElement.querySelector('.popup__photos');
 
   cardElement.querySelector('.popup__title').textContent = card.offer.title;
   cardElement.querySelector('.popup__text--address').textContent = card.offer.address;
@@ -147,45 +157,34 @@ var renderCard = function (card) {
   cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
   cardElement.querySelector('.popup__description').textContent = card.offer.description;
   cardElement.querySelector('.popup__avatar').src = card.author.avatar;
-  cardElement.querySelector('.popup__photos').removeChild(cardPhoto);
+
 
   // Тип жилья
-  if (card.offer.type === 'flat') {
-    cardOfferType.textContent = 'Квартира';
-  } else if (card.offer.type === 'bungalo') {
-    cardOfferType.textContent = 'Бунгало';
-  } else if (card.offer.type === 'house') {
-    cardOfferType.textContent = 'Дом';
-  } else {
-    cardOfferType.textContent = 'Дворец';
-  }
+  cardElement.querySelector('.popup__type').textContent = l10nTypeOffer[card.offer.type];
 
   // Удобства
-  var cardOfferFeatures = cardElement.querySelectorAll('.popup__feature');
-  for (i = 0; i < cardOfferFeatures.length; i++) {
-    cardOfferFeatures[i].style.display = 'none';
-    if (i < card.offer.features.length) {
-      cardOfferFeatures[i].style.display = 'inline-block';
-    }
-  }
+  cardOfferFeaturesArray.forEach(function (node) {
+    node.remove();
+  });
+
+  card.offer.features.forEach(function (item) {
+    var featureLi = document.createElement('li');
+    featureLi.classList.add('popup__feature');
+    featureLi.classList.add('popup__feature--' + item);
+
+    cardOfferFeatures.appendChild(featureLi);
+  });
+
+  // Отрисовка 3х фото
+  photosContainer.removeChild(cardPhoto);
+
+  card.offer.photos.forEach(function (photo) {
+    var tempPhoto = cardPhoto.cloneNode();
+    tempPhoto.src = photo;
+
+    photosContainer.appendChild(tempPhoto);
+  });
 
   return cardElement;
 };
-
-var filterContainer = document.querySelector('.map__filters-container');
-fragment.appendChild(renderCard(adAround[0]));
-mapCard.insertBefore(fragment, filterContainer);
-
-// Отрисовка 3х фото
-var cardPhotos = document.querySelector('.popup__photos');
-var mapPhotoTemplate = document.querySelector('template').content.querySelector('.popup__photo');
-
-var renderPhoto = function (photo) {
-  for (i = 0; i < photo.offer.photos.length; i++) {
-    var cardPhoto = mapPhotoTemplate.cloneNode();
-    cardPhoto.src = photo.offer.photos[i];
-    fragment.appendChild(cardPhoto);
-  }
-  cardPhotos.appendChild(fragment);
-};
-renderPhoto(adAround[0]);
+mapCard.insertBefore(renderCard(adAround[0]), filterContainer);
