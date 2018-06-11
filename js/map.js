@@ -138,6 +138,7 @@ var mapCardTemplate = document.querySelector('template').content.querySelector('
 var renderCard = function (card) {
   var cardElement = mapCardTemplate.cloneNode(true);
   var cardOfferType = cardElement.querySelector('.popup__type');
+  var cardPhoto = cardElement.querySelector('.popup__photo');
 
   cardElement.querySelector('.popup__title').textContent = card.offer.title;
   cardElement.querySelector('.popup__text--address').textContent = card.offer.address;
@@ -145,7 +146,8 @@ var renderCard = function (card) {
   cardElement.querySelector('.popup__text--capacity').textContent = card.offer.rooms + ' комнаты для ' + card.offer.guests + ' гостей';
   cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
   cardElement.querySelector('.popup__description').textContent = card.offer.description;
-  cardElement.querySelector('img').src = card.author.avatar;
+  cardElement.querySelector('.popup__avatar').src = card.author.avatar;
+  cardElement.querySelector('.popup__photos').removeChild(cardPhoto);
 
   // Тип жилья
   if (card.offer.type === 'flat') {
@@ -167,13 +169,23 @@ var renderCard = function (card) {
     }
   }
 
-  // Фото надо придумать как добавлять 3 img
-  for (i = 0; i < card.offer.photos.length; i++) {
-    cardElement.querySelector('.popup__photo').src = card.offer.photos[i];
-  }
-
   return cardElement;
 };
-// надо понять как встроить блок до блока .map__filters-container
+
+var filterContainer = document.querySelector('.map__filters-container');
 fragment.appendChild(renderCard(adAround[0]));
-mapCard.appendChild(fragment);
+mapCard.insertBefore(fragment, filterContainer);
+
+// Отрисовка 3х фото
+var cardPhotos = document.querySelector('.popup__photos');
+var mapPhotoTemplate = document.querySelector('template').content.querySelector('.popup__photo');
+
+var renderPhoto = function (photo) {
+  for (i = 0; i < photo.offer.photos.length; i++) {
+    var cardPhoto = mapPhotoTemplate.cloneNode();
+    cardPhoto.src = photo.offer.photos[i];
+    fragment.appendChild(cardPhoto);
+  }
+  cardPhotos.appendChild(fragment);
+};
+renderPhoto(adAround[0]);
