@@ -21,12 +21,15 @@ var maxAvatarCount = 8;
 var map = document.querySelector('.map');
 var mapPins = document.querySelector('.map__pins');
 var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
+var mapPinMain = document.querySelector('.map__pin--main');
 var fragment = document.createDocumentFragment();
 var filterContainer = document.querySelector('.map__filters-container');
 
 // Константы
 var PIN_HEIGHT = 70;
-var PIN_WIDTH = 50 / 2;
+var PIN_WIDTH = 84 / 2;
+var MAP_HEIGHT = 750;
+var MAP_WIDTH = 1200;
 
 // Итоговый массив с 8 сгенерированными объектами
 var adAround = [];
@@ -107,7 +110,7 @@ for (var i = 0; i < adCount; i++) {
 }
 
 // Переключение карты в интерактивное состояние
-map.classList.remove('map--faded');
+
 
 // Отрисовка пинов на карте
 var renderPin = function (pin) {
@@ -129,7 +132,6 @@ var createFragment = function (renderArr, workArr, direct) {
   }
   direct.appendChild(fragment);
 };
-createFragment(renderPin, adAround, mapPins);
 
 // Заполнение объявления
 var mapCard = document.querySelector('.map');
@@ -187,4 +189,39 @@ var renderCard = function (card) {
 
   return cardElement;
 };
-mapCard.insertBefore(renderCard(adAround[0]), filterContainer);
+// mapCard.insertBefore(renderCard(adAround[0]), filterContainer);
+
+var adForm = document.querySelector('.ad-form');
+var adFormFieldsets = adForm.querySelectorAll('fieldset');
+var formAddressInput = document.querySelector('#address');
+var mapPinMainLocation = {
+  x: MAP_WIDTH / 2 - PIN_WIDTH,
+  y: MAP_HEIGHT / 2 - PIN_HEIGHT / 2
+};
+
+// Активация страницы
+mapPinMain.addEventListener('mouseup', function () {
+  map.classList.remove('map--faded');
+  adForm.classList.remove('ad-form--disabled');
+  for (i = 0; i < adFormFieldsets.length; i++) {
+    adFormFieldsets[i].disabled = false;
+  }
+  formAddressInput.value = mapPinMainLocation.x + ' ' + mapPinMainLocation.y;
+  // Отрисовка пинов
+  createFragment(renderPin, adAround, mapPins);
+});
+
+var selectedButton;
+mapPins.onclick = function (evt) {
+  var clickedElement = evt.target;
+  if (clickedElement.tagName !== 'button') {
+    return;
+  }
+  handler(clickedElement);
+};
+var handler = function (node) {
+  selectedButton = node;
+  selectedButton.display = 'none';
+}
+
+// mapCard.insertBefore(renderCard(adAround[i]), filterContainer);
