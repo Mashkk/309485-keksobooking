@@ -25,14 +25,27 @@ var mapPinMain = document.querySelector('.map__pin--main');
 var fragment = document.createDocumentFragment();
 var filterContainer = document.querySelector('.map__filters-container');
 
+var l10nTypeOffer = {
+  'flat': 'Квартира',
+  'palace': 'Дворец',
+  'house': 'Дом',
+  'bungalo': 'Бунгало'
+};
+
 // Константы
-var PIN_HEIGHT = 70;
-var PIN_WIDTH = 84 / 2;
+var PIN_HEIGHT = 84;
+var PIN_WIDTH = 62;
 var MAP_HEIGHT = 750;
 var MAP_WIDTH = 1200;
+var ESC_KEYCODE = 27;
 
 // Итоговый массив с 8 сгенерированными объектами
 var adAround = [];
+// Массив с пинами
+var renderedPins = [];
+// Хранение эл-та с окном описания объявления
+var currentOffer = null;
+var popupCloseButton = null;
 
 // Функции для рандома
 var getRandom = function (arr, doRemove) {
@@ -109,11 +122,8 @@ for (var i = 0; i < adCount; i++) {
   );
 }
 
-// Переключение карты в интерактивное состояние
-
-
-// Отрисовка пинов на карте
-var renderPin = function (pin) {
+// Создание пинов
+var createPin = function (pin) {
   var pinElement = mapPinTemplate.cloneNode(true);
   var pinLocationX = pin.location.x - PIN_WIDTH;
   var pinLocationY = pin.location.y - PIN_HEIGHT;
@@ -126,26 +136,13 @@ var renderPin = function (pin) {
   return pinElement;
 };
 
-var createFragment = function (renderArr, workArr, direct) {
-  for (i = 0; i < adAround.length; i++) {
-    fragment.appendChild(renderArr(workArr[i]));
-  }
-  direct.appendChild(fragment);
-};
-
 // Заполнение объявления
 var mapCard = document.querySelector('.map');
 var mapCardTemplate = document.querySelector('template').content.querySelector('.map__card');
 
-var renderCard = function (card) {
+var createCard = function (card) {
   var cardElement = mapCardTemplate.cloneNode(true);
   var cardPhoto = cardElement.querySelector('.popup__photo');
-  var l10nTypeOffer = {
-    'flat': 'Квартира',
-    'palace': 'Дворец',
-    'house': 'Дом',
-    'bungalo': 'Бунгало'
-  };
 
   var cardOfferFeaturesArray = cardElement.querySelectorAll('.popup__feature');
   var cardOfferFeatures = cardElement.querySelector('.popup__features');
@@ -194,34 +191,58 @@ var renderCard = function (card) {
 var adForm = document.querySelector('.ad-form');
 var adFormFieldsets = adForm.querySelectorAll('fieldset');
 var formAddressInput = document.querySelector('#address');
-var mapPinMainLocation = {
-  x: MAP_WIDTH / 2 - PIN_WIDTH,
-  y: MAP_HEIGHT / 2 - PIN_HEIGHT / 2
+var mapPinMainStartLocation = {
+  x: MAP_WIDTH / 2 + PIN_WIDTH / 2,
+  y: MAP_HEIGHT / 2 + PIN_HEIGHT
 };
+// Стартовое значения поля адреса
+formAddressInput.value = mapPinMainStartLocation.x + ' ' + mapPinMainStartLocation.y;
 
 // Активация страницы
-mapPinMain.addEventListener('mouseup', function () {
+mapPinMain.addEventListener('mouseup', function () { // вынести в отдельную функцию и потом удалить
   map.classList.remove('map--faded');
   adForm.classList.remove('ad-form--disabled');
   for (i = 0; i < adFormFieldsets.length; i++) {
     adFormFieldsets[i].disabled = false;
   }
-  formAddressInput.value = mapPinMainLocation.x + ' ' + mapPinMainLocation.y;
   // Отрисовка пинов
-  createFragment(renderPin, adAround, mapPins);
+  renderPins(adAround, mapPins);
 });
 
-var selectedButton;
-mapPins.onclick = function (evt) {
-  var clickedElement = evt.target;
-  if (clickedElement.tagName !== 'button') {
-    return;
+// Удаление листенера при закрытии окна с объявлением
+var closeHandler = function () {
+  if (currentOffer && popupCloseButton) {
+    popupCloseButton.removeEventListener('click', closeHandler);
+    currentOffer.remove();
+    currentOffer = null;
+    popupCloseButton = null;
   }
-  handler(clickedElement);
 };
-var handler = function (node) {
-  selectedButton = node;
-  selectedButton.display = 'none';
-}
+// Закрытие по клавише Esc
+document.addEventListener('keydown', function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closeHandler();
+  }
+});
+// Рендер пинов, открытие объявления по клику на соотвествующий пин и закрытие
+var renderPins = function (ads, target) {
+  // Идем по массиву с объявлениями и создаем объекты для массива с пинами
+  ads.forEach(function (item) {
+    var pin = createPin(item);
+    fragment.appendChild(pin); // Добавляем во фрагмент каждый созданный пин
+    renderedPins.push(pin); // Добавляем в массив объект, с данными на каждый созданный пин
 
-// mapCard.insertBefore(renderCard(adAround[i]), filterContainer);
+    // Слушатель для открытия объявления по нажатию на пин
+    pin.addEventListener('click', function () {
+      if (currentOffer) {
+        currentOffer.remove(); // Вначале функции убираем объявление, если есть открытое
+      }
+      currentOffer = createCard(item); // Вызываем функцию создания карточки объявления для каждого объекта в массиве объявлений
+      popupCloseButton = currentOffer.querySelector('.popup__close');
+      popupCloseButton.addEventListener('click', closeHandler); // Добавляем слушатель для закрытия по нажатию на крестик
+      mapCard.insertBefore(currentOffer, filterContainer); // Добавлем в разметку выбранную карточку-объявление
+    });
+  });
+  target.appendChild(fragment);
+};
+
