@@ -11,7 +11,7 @@ var photosOpt = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o
 
 // Переmенные
 var adCount = 8;
-var minPrice = 1000;
+var minPriceMock = 1000;
 var maxPrice = 1000000;
 var minRooms = 1;
 var maxRooms = 5;
@@ -30,6 +30,39 @@ var l10nTypeOffer = {
   'palace': 'Дворец',
   'house': 'Дом',
   'bungalo': 'Бунгало'
+};
+
+var checkin = document.querySelector('#timein');
+var checkout = document.querySelector('#timeout');
+var roomNumber = document.querySelector('#room_number');
+var capacity = document.querySelector('#capacity');
+var price = document.querySelector('#price');
+var type = document.querySelector('#type');
+
+var minPriceForType = {
+  'bungalo': '0',
+  'flat': '1000',
+  'house': '5000',
+  'palace': '10000'
+};
+
+var selector = {
+  '100': {
+    capacity: ['0'],
+    error: 'Для 100 комнат гостей указывать нельзя'
+  },
+  '1': {
+    capacity: ['1'],
+    error: 'Для 1 комнаты можно указать 1 гостя'
+  },
+  '2': {
+    capacity: ['1', '2'],
+    error: 'Для 2 комнат, можно указать 1 или 2 гостей'
+  },
+  '3': {
+    capacity: ['1', '2', '3'],
+    error: 'Для 3 комнат можно указать 1, 2 или 3 гостей'
+  }
 };
 
 // Константы
@@ -103,7 +136,7 @@ for (var i = 0; i < adCount; i++) {
         offer: {
           title: getRandom(titleOpt, true),
           address: locationX + ', ' + locationY,
-          price: getRandomNumber(minPrice, maxPrice),
+          price: getRandomNumber(minPriceMock, maxPrice),
           type: getRandom(typeOpt),
           rooms: getRandomNumber(minRooms, maxRooms),
           guests: getRandomNumber(1, 15),
@@ -213,6 +246,7 @@ mapPinMain.addEventListener('mouseup', function () { // вынести в отд
 var closeHandler = function () {
   if (currentOffer && popupCloseButton) {
     popupCloseButton.removeEventListener('click', closeHandler);
+    document.removeEventListener('keydown', closeHandler);
     currentOffer.remove();
     currentOffer = null;
     popupCloseButton = null;
@@ -245,4 +279,49 @@ var renderPins = function (ads, target) {
   });
   target.appendChild(fragment);
 };
+
+// Валидация полей кол-ва-гостей и комнат
+var roomSelectHandler = function () {
+  var selectedCapacity = selector[roomNumber.value].capacity;// Получаем значение value option гостей и берем значение capacity соответствущего объекта
+  if (selectedCapacity.indexOf(capacity.value) === -1) { // Проверка на отсутствие в этом массиве значения value гостей
+    capacity.setCustomValidity(selector[roomNumber.value].error); // Вывод соотвествующего предупреждения об ошибке
+  } else {
+    capacity.setCustomValidity(''); // Сброс предупреждения
+  }
+};
+// Подписываемся на изменения select гостей и комнат
+roomNumber.addEventListener('change', roomSelectHandler);
+capacity.addEventListener('change', roomSelectHandler);
+
+// Синхронизация времени заезда/выезда
+var checkinHandler = function () {
+  if (checkin.value !== checkout.value) {
+    checkout.value = checkin.value;
+  }
+};
+var checkoutHandler = function () {
+  if (checkin.value !== checkout.value) {
+    checkin.value = checkout.value;
+  }
+};
+checkin.addEventListener('change', checkinHandler);
+checkout.addEventListener('change', checkoutHandler);
+
+// Установка минимальной цены в зависимости от выбранного типа жилья
+var minPriceHandler = function () {
+  var minPrice = minPriceForType[type.value];
+  price.min = minPrice;
+  price.placeholder = minPrice;
+};
+type.addEventListener('change', minPriceHandler);
+
+price.addEventListener('invalid', function () {
+  if (price.validity.rangeUnderflow) {
+    price.setCustomValidity('Минимальная цена для данного типа жилья ' + price.min);
+  } else if (price.validity.rangeOverflow) {
+    price.setCustomValidity('Максимальная цена для данного типа жилья ' + price.max);
+  } else {
+    price.setCustomValidity('');
+  }
+});
 
