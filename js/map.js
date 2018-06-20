@@ -68,7 +68,6 @@ var selector = {
 // Константы
 var PIN_HEIGHT = 84;
 var PIN_WIDTH = 62;
-var MAP_HEIGHT = 750;
 var MAP_WIDTH = 1200;
 var ESC_KEYCODE = 27;
 
