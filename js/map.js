@@ -68,7 +68,6 @@ var selector = {
 // Константы
 var PIN_HEIGHT = 84;
 var PIN_WIDTH = 62;
-var MAP_HEIGHT = 750;
 var MAP_WIDTH = 1200;
 var ESC_KEYCODE = 27;
 
@@ -224,15 +223,12 @@ var createCard = function (card) {
 var adForm = document.querySelector('.ad-form');
 var adFormFieldsets = adForm.querySelectorAll('fieldset');
 var formAddressInput = document.querySelector('#address');
-var mapPinMainStartLocation = {
-  x: MAP_WIDTH / 2 + PIN_WIDTH / 2,
-  y: MAP_HEIGHT / 2 + PIN_HEIGHT
-};
+
 // Стартовое значения поля адреса
-formAddressInput.value = mapPinMainStartLocation.x + ' ' + mapPinMainStartLocation.y;
+formAddressInput.value = (mapPinMain.offsetLeft + PIN_WIDTH / 2) + ' ' + (mapPinMain.offsetTop + PIN_HEIGHT);
 
 // Активация страницы
-mapPinMain.addEventListener('mouseup', function () { // вынести в отдельную функцию и потом удалить
+var showUI = function () {
   map.classList.remove('map--faded');
   adForm.classList.remove('ad-form--disabled');
   for (i = 0; i < adFormFieldsets.length; i++) {
@@ -240,24 +236,75 @@ mapPinMain.addEventListener('mouseup', function () { // вынести в отд
   }
   // Отрисовка пинов
   renderPins(adAround, mapPins);
-});
+  mapPinMain.removeEventListener('mouseup', showUI);
+};
+
+mapPinMain.addEventListener('mouseup', showUI);
+
+// Drag & Drop
+(function () {
+  mapPinMain.addEventListener('mousedown', function (evt) {
+    evt.preventDefault();
+
+    // Объявляем стартовые координаты
+    var startCoords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+    // Высчитываем координаты после перемещения мыши
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+      var shift = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
+      };
+
+      var regulationCoordsY = mapPinMain.offsetTop - shift.y;
+      var INDENT_TOP = 130 - PIN_HEIGHT;
+      var INDENT_BOTTOM = 630 - PIN_HEIGHT;
+
+      // Проверка на область координат
+      if (moveEvt.clientX >= (map.offsetLeft + PIN_WIDTH / 2) && moveEvt.clientX <= (map.offsetLeft + MAP_WIDTH - PIN_WIDTH / 2) && regulationCoordsY >= INDENT_TOP && regulationCoordsY <= INDENT_BOTTOM) {
+        startCoords = {
+          // Перезаписываем стартовые координаты
+          x: moveEvt.clientX,
+          y: moveEvt.clientY
+        };
+        // Заполение поля адреса
+        formAddressInput.value = (mapPinMain.offsetLeft - shift.x + PIN_WIDTH / 2) + ' ' + (mapPinMain.offsetTop - shift.y + PIN_HEIGHT);
+        // Меняем координаты в CSS
+        mapPinMain.style.top = (mapPinMain.offsetTop - shift.y) + 'px';
+        mapPinMain.style.left = (mapPinMain.offsetLeft - shift.x) + 'px';
+      }
+    };
+    // Drop
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  });
+})();
 
 // Удаление листенера при закрытии окна с объявлением
 var closeHandler = function () {
   if (currentOffer && popupCloseButton) {
     popupCloseButton.removeEventListener('click', closeHandler);
-    document.removeEventListener('keydown', closeHandler);
+    document.removeEventListener('keydown', closeEventHandler);
     currentOffer.remove();
     currentOffer = null;
     popupCloseButton = null;
   }
 };
 // Закрытие по клавише Esc
-document.addEventListener('keydown', function (evt) {
+var closeEventHandler = function (evt) {
   if (evt.keyCode === ESC_KEYCODE) {
     closeHandler();
   }
-});
+};
+document.addEventListener('keydown', closeEventHandler);
 // Рендер пинов, открытие объявления по клику на соотвествующий пин и закрытие
 var renderPins = function (ads, target) {
   // Идем по массиву с объявлениями и создаем объекты для массива с пинами
