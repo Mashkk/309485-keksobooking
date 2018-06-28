@@ -19,17 +19,17 @@ var maxAvatarCount = 8;
 
 var map = document.querySelector('.map');
 var mapPins = document.querySelector('.map__pins');
-var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
+// var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
 var mapPinMain = document.querySelector('.map__pin--main');
 var fragment = document.createDocumentFragment();
 var filterContainer = document.querySelector('.map__filters-container');
 
-var l10nTypeOffer = {
-  'flat': 'Квартира',
-  'palace': 'Дворец',
-  'house': 'Дом',
-  'bungalo': 'Бунгало'
-};
+// var l10nTypeOffer = {
+//   'flat': 'Квартира',
+//   'palace': 'Дворец',
+//   'house': 'Дом',
+//   'bungalo': 'Бунгало'
+// };
 
 // var checkin = document.querySelector('#timein');
 // var checkout = document.querySelector('#timeout');
@@ -65,10 +65,12 @@ var l10nTypeOffer = {
 // };
 
 // Константы
-var PIN_HEIGHT = 84;
-var PIN_WIDTH = 62;
-var MAP_WIDTH = 1200;
-var ESC_KEYCODE = 27;
+window.constants = {
+  PIN_HEIGHT: 84,
+  PIN_WIDTH: 62,
+  MAP_WIDTH: 1200,
+  ESC_KEYCODE: 27
+};
 
 // Итоговый массив с 8 сгенерированными объектами
 var adAround = [];
@@ -153,77 +155,78 @@ for (var i = 0; i < adCount; i++) {
 }
 
 // Создание пинов
-var createPin = function (pin) {
-  var pinElement = mapPinTemplate.cloneNode(true);
-  var pinLocationX = pin.location.x - PIN_WIDTH;
-  var pinLocationY = pin.location.y - PIN_HEIGHT;
+// var createPin = function (pin) {
+//   var pinElement = mapPinTemplate.cloneNode(true);
+//   var pinLocationX = pin.location.x - PIN_WIDTH;
+//   var pinLocationY = pin.location.y - PIN_HEIGHT;
 
-  pinElement.style.left = pinLocationX + 'px';
-  pinElement.style.top = pinLocationY + 'px';
-  pinElement.querySelector('img').src = pin.author.avatar;
-  pinElement.querySelector('img').alt = pin.offer.title;
+//   pinElement.style.left = pinLocationX + 'px';
+//   pinElement.style.top = pinLocationY + 'px';
+//   pinElement.querySelector('img').src = pin.author.avatar;
+//   pinElement.querySelector('img').alt = pin.offer.title;
 
-  return pinElement;
-};
+//   return pinElement;
+// };
 
 // Заполнение объявления
-var mapCard = document.querySelector('.map');
-var mapCardTemplate = document.querySelector('template').content.querySelector('.map__card');
 
-var createCard = function (card) {
-  var cardElement = mapCardTemplate.cloneNode(true);
-  var cardPhoto = cardElement.querySelector('.popup__photo');
+// var mapCardTemplate = document.querySelector('template').content.querySelector('.map__card');
 
-  var cardOfferFeaturesArray = cardElement.querySelectorAll('.popup__feature');
-  var cardOfferFeatures = cardElement.querySelector('.popup__features');
+// var createCard = function (card) {
+//   var cardElement = mapCardTemplate.cloneNode(true);
+//   var cardPhoto = cardElement.querySelector('.popup__photo');
 
-  var photosContainer = cardElement.querySelector('.popup__photos');
+//   var cardOfferFeaturesArray = cardElement.querySelectorAll('.popup__feature');
+//   var cardOfferFeatures = cardElement.querySelector('.popup__features');
 
-  cardElement.querySelector('.popup__title').textContent = card.offer.title;
-  cardElement.querySelector('.popup__text--address').textContent = card.offer.address;
-  cardElement.querySelector('.popup__text--price').textContent = card.offer.price + '₽/ночь';
-  cardElement.querySelector('.popup__text--capacity').textContent = card.offer.rooms + ' комнаты для ' + card.offer.guests + ' гостей';
-  cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
-  cardElement.querySelector('.popup__description').textContent = card.offer.description;
-  cardElement.querySelector('.popup__avatar').src = card.author.avatar;
+//   var photosContainer = cardElement.querySelector('.popup__photos');
+
+//   cardElement.querySelector('.popup__title').textContent = card.offer.title;
+//   cardElement.querySelector('.popup__text--address').textContent = card.offer.address;
+//   cardElement.querySelector('.popup__text--price').textContent = card.offer.price + '₽/ночь';
+//   cardElement.querySelector('.popup__text--capacity').textContent = card.offer.rooms + ' комнаты для ' + card.offer.guests + ' гостей';
+//   cardElement.querySelector('.popup__text--time').textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
+//   cardElement.querySelector('.popup__description').textContent = card.offer.description;
+//   cardElement.querySelector('.popup__avatar').src = card.author.avatar;
 
 
-  // Тип жилья
-  cardElement.querySelector('.popup__type').textContent = l10nTypeOffer[card.offer.type];
+//   // Тип жилья
+//   cardElement.querySelector('.popup__type').textContent = l10nTypeOffer[card.offer.type];
 
-  // Удобства
-  cardOfferFeaturesArray.forEach(function (node) {
-    node.remove();
-  });
+//   // Удобства
+//   cardOfferFeaturesArray.forEach(function (node) {
+//     node.remove();
+//   });
 
-  card.offer.features.forEach(function (item) {
-    var featureLi = document.createElement('li');
-    featureLi.classList.add('popup__feature');
-    featureLi.classList.add('popup__feature--' + item);
+//   card.offer.features.forEach(function (item) {
+//     var featureLi = document.createElement('li');
+//     featureLi.classList.add('popup__feature');
+//     featureLi.classList.add('popup__feature--' + item);
 
-    cardOfferFeatures.appendChild(featureLi);
-  });
+//     cardOfferFeatures.appendChild(featureLi);
+//   });
 
-  // Отрисовка 3х фото
-  photosContainer.removeChild(cardPhoto);
+//   // Отрисовка 3х фото
+//   photosContainer.removeChild(cardPhoto);
 
-  card.offer.photos.forEach(function (photo) {
-    var tempPhoto = cardPhoto.cloneNode();
-    tempPhoto.src = photo;
+//   card.offer.photos.forEach(function (photo) {
+//     var tempPhoto = cardPhoto.cloneNode();
+//     tempPhoto.src = photo;
 
-    photosContainer.appendChild(tempPhoto);
-  });
+//     photosContainer.appendChild(tempPhoto);
+//   });
 
-  return cardElement;
-};
+//   return cardElement;
+// };
 // mapCard.insertBefore(renderCard(adAround[0]), filterContainer);
 
+var mapCard = document.querySelector('.map');
 var adForm = document.querySelector('.ad-form');
 var adFormFieldsets = adForm.querySelectorAll('fieldset');
 var formAddressInput = document.querySelector('#address');
 
 // Стартовое значения поля адреса
-formAddressInput.value = (mapPinMain.offsetLeft + PIN_WIDTH / 2) + ' ' + (mapPinMain.offsetTop + PIN_HEIGHT);
+formAddressInput.value = (mapPinMain.offsetLeft + window.constants.PIN_WIDTH / 2) + ' ' + (mapPinMain.offsetTop + window.constants.PIN_HEIGHT);
 
 // Активация страницы
 var showUI = function () {
@@ -258,18 +261,18 @@ mapPinMain.addEventListener('mouseup', showUI);
       };
 
       var regulationCoordsY = mapPinMain.offsetTop - shift.y;
-      var INDENT_TOP = 130 - PIN_HEIGHT;
-      var INDENT_BOTTOM = 630 - PIN_HEIGHT;
+      var INDENT_TOP = 130 - window.constants.PIN_HEIGHT;
+      var INDENT_BOTTOM = 630 - window.constants.PIN_HEIGHT;
 
       // Проверка на область координат
-      if (moveEvt.clientX >= (map.offsetLeft + PIN_WIDTH / 2) && moveEvt.clientX <= (map.offsetLeft + MAP_WIDTH - PIN_WIDTH / 2) && regulationCoordsY >= INDENT_TOP && regulationCoordsY <= INDENT_BOTTOM) {
+      if (moveEvt.clientX >= (map.offsetLeft + window.constants.PIN_WIDTH / 2) && moveEvt.clientX <= (map.offsetLeft + window.constants.MAP_WIDTH - window.constants.PIN_WIDTH / 2) && regulationCoordsY >= INDENT_TOP && regulationCoordsY <= INDENT_BOTTOM) {
         startCoords = {
           // Перезаписываем стартовые координаты
           x: moveEvt.clientX,
           y: moveEvt.clientY
         };
         // Заполение поля адреса
-        formAddressInput.value = (mapPinMain.offsetLeft - shift.x + PIN_WIDTH / 2) + ' ' + (mapPinMain.offsetTop - shift.y + PIN_HEIGHT);
+        formAddressInput.value = (mapPinMain.offsetLeft - shift.x + window.constants.PIN_WIDTH / 2) + ' ' + (mapPinMain.offsetTop - shift.y + window.constants.PIN_HEIGHT);
         // Меняем координаты в CSS
         mapPinMain.style.top = (mapPinMain.offsetTop - shift.y) + 'px';
         mapPinMain.style.left = (mapPinMain.offsetLeft - shift.x) + 'px';
@@ -298,7 +301,7 @@ var closeHandler = function () {
 };
 // Закрытие по клавише Esc
 var closeEventHandler = function (evt) {
-  if (evt.keyCode === ESC_KEYCODE) {
+  if (evt.keyCode === window.constants.ESC_KEYCODE) {
     closeHandler();
   }
 };
@@ -307,7 +310,7 @@ document.addEventListener('keydown', closeEventHandler);
 var renderPins = function (ads, target) {
   // Идем по массиву с объявлениями и создаем объекты для массива с пинами
   ads.forEach(function (item) {
-    var pin = createPin(item);
+    var pin = window.createPin(item);
     fragment.appendChild(pin); // Добавляем во фрагмент каждый созданный пин
     renderedPins.push(pin); // Добавляем в массив объект, с данными на каждый созданный пин
 
@@ -316,7 +319,7 @@ var renderPins = function (ads, target) {
       if (currentOffer) {
         currentOffer.remove(); // Вначале функции убираем объявление, если есть открытое
       }
-      currentOffer = createCard(item); // Вызываем функцию создания карточки объявления для каждого объекта в массиве объявлений
+      currentOffer = window.createCard(item); // Вызываем функцию создания карточки объявления для каждого объекта в массиве объявлений
       popupCloseButton = currentOffer.querySelector('.popup__close');
       popupCloseButton.addEventListener('click', closeHandler); // Добавляем слушатель для закрытия по нажатию на крестик
       mapCard.insertBefore(currentOffer, filterContainer); // Добавлем в разметку выбранную карточку-объявление
