@@ -80,33 +80,33 @@ var currentOffer = null;
 var popupCloseButton = null;
 
 // Функции для рандома
-var getRandom = function (arr, doRemove) {
-  var randomIdx = Math.floor(Math.random() * arr.length);
-  var randomItem = arr[randomIdx];
-  if (doRemove) {
-    arr.splice(randomIdx, 1);
-  }
+// var getRandom = function (arr, doRemove) {
+//   var randomIdx = Math.floor(Math.random() * arr.length);
+//   var randomItem = arr[randomIdx];
+//   if (doRemove) {
+//     arr.splice(randomIdx, 1);
+//   }
 
-  return randomItem;
-};
+//   return randomItem;
+// };
 
-var getRandomNumber = function (min, max) {
-  var rand = min - 0.5 + Math.random() * (max - min + 1);
-  rand = Math.round(rand);
-  return rand;
-};
+// var getRandomNumber = function (min, max) {
+//   var rand = min - 0.5 + Math.random() * (max - min + 1);
+//   rand = Math.round(rand);
+//   return rand;
+// };
 
-var shuffleArray = function (arr) {
-  var container;
-  var temp;
-  for (var i = arr.length - 1; i > 0; i--) {
-    container = Math.floor(Math.random() * (i + 1));
-    temp = arr[container];
-    arr[container] = arr[i];
-    arr[i] = temp;
-  }
-  return arr;
-};
+// var shuffleArray = function (arr) {
+//   var container;
+//   var temp;
+//   for (var i = arr.length - 1; i > 0; i--) {
+//     container = Math.floor(Math.random() * (i + 1));
+//     temp = arr[container];
+//     arr[container] = arr[i];
+//     arr[i] = temp;
+//   }
+//   return arr;
+// };
 
 // генератор для ав
 var generateAvatar = function (min, max) {
@@ -122,28 +122,27 @@ var avatarOpt = generateAvatar(minAvatarCount, maxAvatarCount);
 
 // Сборка массива
 for (var i = 0; i < adCount; i++) {
-  var locationX = getRandomNumber(300, 900);
-  var locationY = getRandomNumber(130, 630);
+  var locationX = window.randomFunction.getRandomNumber(300, 900);
+  var locationY = window.randomFunction.getRandomNumber(130, 630);
 
   adAround.push(
       {
         author: {
-          // Оставила такую запись, тк там еще надо что бы не было повторений в цифрах.
-          avatar: 'img/avatars/user0' + getRandom(avatarOpt, true) + '.png'
+          avatar: 'img/avatars/user0' + window.randomFunction.getRandom(avatarOpt, true) + '.png'
         },
 
         offer: {
-          title: getRandom(titleOpt, true),
+          title: window.randomFunction.getRandom(titleOpt, true),
           address: locationX + ', ' + locationY,
-          price: getRandomNumber(minPriceMock, maxPrice),
-          type: getRandom(typeOpt),
-          rooms: getRandomNumber(minRooms, maxRooms),
-          guests: getRandomNumber(1, 15),
-          checkin: getRandom(checkinOpt),
-          checkout: getRandom(checkoutOpt),
-          features: featuresOpt.splice(getRandomNumber(0, featuresOpt.length - 1)),
+          price: window.randomFunction.getRandomNumber(minPriceMock, maxPrice),
+          type: window.randomFunction.getRandom(typeOpt),
+          rooms: window.randomFunction.getRandomNumber(minRooms, maxRooms),
+          guests: window.randomFunction.getRandomNumber(1, 15),
+          checkin: window.randomFunction.getRandom(checkinOpt),
+          checkout: window.randomFunction.getRandom(checkoutOpt),
+          features: featuresOpt.splice(window.randomFunction.getRandomNumber(0, featuresOpt.length - 1)),
           description: '',
-          photos: shuffleArray(photosOpt)
+          photos: window.randomFunction.shuffleArray(photosOpt)
         },
 
         location: {
