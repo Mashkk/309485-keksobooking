@@ -25,12 +25,31 @@
     'house': '5000',
     'palace': '10000'
   };
-  var checkin = document.querySelector('#timein');
-  var checkout = document.querySelector('#timeout');
-  var roomNumber = document.querySelector('#room_number');
-  var capacity = document.querySelector('#capacity');
-  var price = document.querySelector('#price');
-  var type = document.querySelector('#type');
+  var form = document.querySelector('.ad-form');
+  var title = form.querySelector('#title');
+  var checkin = form.querySelector('#timein');
+  var checkout = form.querySelector('#timeout');
+  var roomNumber = form.querySelector('#room_number');
+  var capacity = form.querySelector('#capacity');
+  var price = form.querySelector('#price');
+  var type = form.querySelector('#type');
+  var description = form.querySelector('#description');
+  var UPLOAD_URL = 'https://js.dump.academy/keksobooking';
+
+  // Отправка формы
+  form.addEventListener('submit', function (evt) {
+    window.upload(new FormData(form), function () {
+      title.value = '';
+      checkin.value = '12:00';
+      checkout.value = '12:00';
+      roomNumber.value = '1';
+      capacity.value = '1';
+      price.value = '';
+      type.value = 'flat';
+      description.value = '';
+    }, UPLOAD_URL);
+    evt.preventDefault();
+  });
 
   // Валидация полей кол-ва-гостей и комнат
   var roomSelectHandler = function () {

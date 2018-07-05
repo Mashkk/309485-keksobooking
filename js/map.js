@@ -30,13 +30,15 @@
 
   // Активация страницы
   var showUI = function () {
+    window.getData(function () {
+      renderPins(window.adAround, mapPins);
+    });
     map.classList.remove('map--faded');
     adForm.classList.remove('ad-form--disabled');
     for (var i = 0; i < adFormFieldsets.length; i++) {
       adFormFieldsets[i].disabled = false;
     }
     // Отрисовка пинов
-    renderPins(window.adAround, mapPins);
     mapPinMain.removeEventListener('mouseup', showUI);
   };
 
@@ -109,6 +111,7 @@
   // Рендер пинов, открытие объявления по клику на соотвествующий пин и закрытие
   var renderPins = function (ads, target) {
     // Идем по массиву с объявлениями и создаем объекты для массива с пинами
+    ads = ads || [];
     ads.forEach(function (item) {
       var pin = window.createPin(item);
       fragment.appendChild(pin); // Добавляем во фрагмент каждый созданный пин
