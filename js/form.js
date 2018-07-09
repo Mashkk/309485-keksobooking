@@ -34,26 +34,21 @@
   var price = form.querySelector('#price');
   var type = form.querySelector('#type');
   var description = form.querySelector('#description');
-  var UPLOAD_URL = 'https://js.dump.academy/keksobooking';
+
   var successMessage = document.querySelector('.success');
-
-
+  var elements = {
+    title: title,
+    checkin: checkin
+  }
   // Отправка формы
   form.addEventListener('submit', function (evt) {
-    window.upload(new FormData(form), function () {
-      title.value = '';
-      checkin.value = '12:00';
-      checkout.value = '12:00';
-      roomNumber.value = '1';
-      capacity.value = '1';
-      price.value = '';
-      type.value = 'flat';
-      description.value = '';
-    }, UPLOAD_URL);
+    window.uploadData(form, {title, checkin, checkout, roomNumber, capacity, price, type, description}, function(){
+      successMessage.classList.remove('hidden');
+      document.addEventListener('click', closeSuccessHandler);
+      document.addEventListener('keydown', closeSuccessEventHandler);
+    })
     evt.preventDefault();
-    successMessage.classList.remove('hidden');
-    document.addEventListener('click', closeSuccessHandler);
-    document.addEventListener('keydown', closeSuccessEventHandler);
+    // Выводить окно с ошибкой!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   });
 
   var closeSuccessHandler = function () {
@@ -63,11 +58,10 @@
   };
 
   var closeSuccessEventHandler = function (evt) {
-    if (evt.keyCode === window.constants.ESC_KEYCODE) {
+    if (evt.keyCode === window.globals.ESC_KEYCODE) {
       closeSuccessHandler();
     }
   };
-
 
   // Валидация полей кол-ва-гостей и комнат
   var roomSelectHandler = function () {

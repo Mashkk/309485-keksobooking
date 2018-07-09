@@ -5,8 +5,8 @@
 
   window.createPin = function (pin) {
     var pinElement = mapPinTemplate.cloneNode(true);
-    var pinLocationX = pin.location.x - window.constants.PIN_WIDTH;
-    var pinLocationY = pin.location.y - window.constants.PIN_HEIGHT;
+    var pinLocationX = pin.location.x - window.globals.PIN_WIDTH;
+    var pinLocationY = pin.location.y - window.globals.PIN_HEIGHT;
 
     pinElement.style.left = pinLocationX + 'px';
     pinElement.style.top = pinLocationY + 'px';

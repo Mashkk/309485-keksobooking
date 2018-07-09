@@ -29,11 +29,11 @@
   };
 
   // Отправка данных на сервер
-  window.upload = function (data, onLoad, UPLOAD_URL, onError) {
+  window.upload = function (data, onLoad, UPLOAD_URL, onError, cb) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
 
-    setupEventListener(xhr, onLoad, onError);
+    setupEventListener(xhr, onLoad, onError, cb);
 
     xhr.open('POST', UPLOAD_URL);
     xhr.send(data);

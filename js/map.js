@@ -8,11 +8,14 @@
   var filterContainer = document.querySelector('.map__filters-container');
 
   // Константы
-  window.constants = {
+  window.globals = {
     PIN_HEIGHT: 84,
     PIN_WIDTH: 62,
     MAP_WIDTH: 1200,
-    ESC_KEYCODE: 27
+    ESC_KEYCODE: 27,
+    setInitAddress: function () {
+      return (mapPinMain.offsetLeft + window.globals.PIN_WIDTH / 2) + ' ' + (mapPinMain.offsetTop + window.globals.PIN_HEIGHT);
+    }
   };
 
   // Массив с пинами
@@ -24,9 +27,9 @@
   var adForm = document.querySelector('.ad-form');
   var adFormFieldsets = adForm.querySelectorAll('fieldset');
   var formAddressInput = document.querySelector('#address');
-
+  var resetButton = document.querySelector('.ad-form__reset'); // Reset!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // Стартовое значения поля адреса
-  formAddressInput.value = (mapPinMain.offsetLeft + window.constants.PIN_WIDTH / 2) + ' ' + (mapPinMain.offsetTop + window.constants.PIN_HEIGHT);
+  formAddressInput.value = window.globals.setInitAddress();
 
   // Активация страницы
   var showUI = function () {
@@ -63,18 +66,18 @@
         };
 
         var regulationCoordsY = mapPinMain.offsetTop - shift.y;
-        var INDENT_TOP = 130 - window.constants.PIN_HEIGHT;
-        var INDENT_BOTTOM = 630 - window.constants.PIN_HEIGHT;
+        var INDENT_TOP = 130 - window.globals.PIN_HEIGHT;
+        var INDENT_BOTTOM = 630 - window.globals.PIN_HEIGHT;
 
         // Проверка на область координат
-        if (moveEvt.clientX >= (map.offsetLeft + window.constants.PIN_WIDTH / 2) && moveEvt.clientX <= (map.offsetLeft + window.constants.MAP_WIDTH - window.constants.PIN_WIDTH / 2) && regulationCoordsY >= INDENT_TOP && regulationCoordsY <= INDENT_BOTTOM) {
+        if (moveEvt.clientX >= (map.offsetLeft + window.globals.PIN_WIDTH / 2) && moveEvt.clientX <= (map.offsetLeft + window.globals.MAP_WIDTH - window.globals.PIN_WIDTH / 2) && regulationCoordsY >= INDENT_TOP && regulationCoordsY <= INDENT_BOTTOM) {
           startCoords = {
             // Перезаписываем стартовые координаты
             x: moveEvt.clientX,
             y: moveEvt.clientY
           };
           // Заполение поля адреса
-          formAddressInput.value = (mapPinMain.offsetLeft - shift.x + window.constants.PIN_WIDTH / 2) + ' ' + (mapPinMain.offsetTop - shift.y + window.constants.PIN_HEIGHT);
+          formAddressInput.value = (mapPinMain.offsetLeft - shift.x + window.globals.PIN_WIDTH / 2) + ' ' + (mapPinMain.offsetTop - shift.y + window.globals.PIN_HEIGHT);
           // Меняем координаты в CSS
           mapPinMain.style.top = (mapPinMain.offsetTop - shift.y) + 'px';
           mapPinMain.style.left = (mapPinMain.offsetLeft - shift.x) + 'px';
@@ -103,7 +106,7 @@
   };
   // Закрытие по клавише Esc
   var closeEventHandler = function (evt) {
-    if (evt.keyCode === window.constants.ESC_KEYCODE) {
+    if (evt.keyCode === window.globals.ESC_KEYCODE) {
       closeHandler();
     }
   };

@@ -35,23 +35,33 @@
       node.remove();
     });
 
-    card.offer.features.forEach(function (item) {
-      var featureLi = document.createElement('li');
-      featureLi.classList.add('popup__feature');
-      featureLi.classList.add('popup__feature--' + item);
+    if (card.offer.features.length > 0) {
+      card.offer.features.forEach(function (item) {
+        var featureLi = document.createElement('li');
+        featureLi.classList.add('popup__feature');
+        featureLi.classList.add('popup__feature--' + item);
 
-      cardOfferFeatures.appendChild(featureLi);
-    });
+        cardOfferFeatures.appendChild(featureLi);
+      });
+    } else {
+      cardOfferFeatures.classList.add('hidden');
+    }
 
     // Отрисовка 3х фото
     photosContainer.removeChild(cardPhoto);
 
-    card.offer.photos.forEach(function (photo) {
-      var tempPhoto = cardPhoto.cloneNode();
-      tempPhoto.src = photo;
+    if (card.offer.photos.length > 0) {
+      card.offer.photos.forEach(function (photo) {
+        var tempPhoto = cardPhoto.cloneNode();
+        tempPhoto.src = photo;
 
-      photosContainer.appendChild(tempPhoto);
-    });
+        photosContainer.appendChild(tempPhoto);
+      });
+    } else {
+      photosContainer.classList.add('hidden');
+    }
+
+
     return cardElement;
   };
 })();
