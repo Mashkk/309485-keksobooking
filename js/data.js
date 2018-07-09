@@ -30,4 +30,14 @@
   window.getData = function (cb) {
     window.load(loadHandler, errorHandler, DOWNLOAD_URL, cb);
   };
+
+  var ads = null;
+  window.data = {
+    get: function () {
+      return ads;
+    },
+    set: function (newAds) {
+      ads = newAds;
+    }
+  };
 })();

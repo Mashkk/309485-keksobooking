@@ -35,6 +35,8 @@
   var type = form.querySelector('#type');
   var description = form.querySelector('#description');
   var UPLOAD_URL = 'https://js.dump.academy/keksobooking';
+  var successMessage = document.querySelector('.success');
+
 
   // Отправка формы
   form.addEventListener('submit', function (evt) {
@@ -49,7 +51,23 @@
       description.value = '';
     }, UPLOAD_URL);
     evt.preventDefault();
+    successMessage.classList.remove('hidden');
+    document.addEventListener('click', closeSuccessHandler);
+    document.addEventListener('keydown', closeSuccessEventHandler);
   });
+
+  var closeSuccessHandler = function () {
+    document.removeEventListener('click', closeSuccessHandler);
+    document.removeEventListener('keydown', closeSuccessEventHandler);
+    successMessage.classList.add('hidden');
+  };
+
+  var closeSuccessEventHandler = function (evt) {
+    if (evt.keyCode === window.constants.ESC_KEYCODE) {
+      closeSuccessHandler();
+    }
+  };
+
 
   // Валидация полей кол-ва-гостей и комнат
   var roomSelectHandler = function () {

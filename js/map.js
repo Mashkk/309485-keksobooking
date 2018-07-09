@@ -107,7 +107,7 @@
       closeHandler();
     }
   };
-  document.addEventListener('keydown', closeEventHandler);
+
   // Рендер пинов, открытие объявления по клику на соотвествующий пин и закрытие
   var renderPins = function (ads, target) {
     // Идем по массиву с объявлениями и создаем объекты для массива с пинами
@@ -125,6 +125,7 @@
         currentOffer = window.createCard(item); // Вызываем функцию создания карточки объявления для каждого объекта в массиве объявлений
         popupCloseButton = currentOffer.querySelector('.popup__close');
         popupCloseButton.addEventListener('click', closeHandler); // Добавляем слушатель для закрытия по нажатию на крестик
+        document.addEventListener('keydown', closeEventHandler);
         mapCard.insertBefore(currentOffer, filterContainer); // Добавлем в разметку выбранную карточку-объявление
       });
     });
