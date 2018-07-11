@@ -32,17 +32,12 @@
     window.load(loadHandler, errorHandler, DOWNLOAD_URL, cb);
   };
   //                            form  elements инфо об успешной отправке
-  window.uploadData = function (data, elements, cb) {
+  window.uploadData = function (data, cb) {
     //                      формдата   онлоад - когда загружен контент на сервер
     window.upload(new FormData(data), function (response, callback) {
-      elements.title.value = '';
-      elements.checkin.value = '12:00';
-      elements.checkout.value = '12:00';
-      elements.roomNumber.value = '1';
-      elements.capacity.value = '1';
-      elements.price.value = '';
-      elements.type.value = 'flat';
-      elements.description.value = '';
+      window.globals.pinInitCoord();
+      window.globals.form.reset();
+      console.log(1);
       callback();
     }, UPLOAD_URL, errorHandler, cb);
   };

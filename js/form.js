@@ -26,6 +26,7 @@
     'palace': '10000'
   };
   var form = document.querySelector('.ad-form');
+  var resetButton = document.querySelector('.ad-form__reset');
   var title = form.querySelector('#title');
   var checkin = form.querySelector('#timein');
   var checkout = form.querySelector('#timeout');
@@ -34,21 +35,48 @@
   var price = form.querySelector('#price');
   var type = form.querySelector('#type');
   var description = form.querySelector('#description');
+  var address = form.querySelector('#address');
+  var checkbox = form.querySelectorAll('input[type="checkbox"]');
 
   var successMessage = document.querySelector('.success');
   var elements = {
     title: title,
-    checkin: checkin
+    checkin: checkin,
+    checkout: checkout,
+    roomNumber: roomNumber,
+    capacity: capacity,
+    price: price,
+    type: type,
+    description: description,
+    address: address,
+    checkbox: checkbox
+  }
+
+  window.globals.form = {
+    reset: function () {
+      elements.title.value = '';
+      elements.checkin.value = '12:00';
+      elements.checkout.value = '12:00';
+      elements.roomNumber.value = '1';
+      elements.capacity.value = '1';
+      elements.price.value = '';
+      elements.type.value = 'flat';
+      elements.description.value = '';
+      elements.address.value = window.globals.setInitAddress();
+      for (var i = 0; i < checkbox.length; i++) {
+        checkbox[i].checked = false;
+      }
+    }
   }
   // Отправка формы
   form.addEventListener('submit', function (evt) {
-    window.uploadData(form, {title, checkin, checkout, roomNumber, capacity, price, type, description}, function(){
+    window.uploadData(form, function(){
       successMessage.classList.remove('hidden');
       document.addEventListener('click', closeSuccessHandler);
       document.addEventListener('keydown', closeSuccessEventHandler);
     })
+    window.globals.hideUI();
     evt.preventDefault();
-    // Выводить окно с ошибкой!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   });
 
   var closeSuccessHandler = function () {
@@ -62,6 +90,13 @@
       closeSuccessHandler();
     }
   };
+
+  // Reset
+  resetButton.addEventListener('click', function (evt) {
+    evt.preventDefault();
+    window.globals.pinInitCoord();
+    window.globals.form.reset();
+  })
 
   // Валидация полей кол-ва-гостей и комнат
   var roomSelectHandler = function () {
