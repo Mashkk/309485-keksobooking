@@ -5,10 +5,6 @@
   var DOWNLOAD_URL = 'https://js.dump.academy/keksobooking/data';
   var UPLOAD_URL = 'https://js.dump.academy/keksobooking';
   var loadHandler = function (data, cb) {
-    // _data = data;
-    // window.getAdAround = function () {
-    //   return _data;
-    // };
     window.adAround = data;
     cb();
   };

@@ -19,13 +19,20 @@
     pinInitCoord: function () {
       mapPinMain.style.top = 375 + 'px';
       mapPinMain.style.left = 570 + 'px';
+    },
+    MAX_PINS: 5,
+
+    currentOffer: null,
+    currentOfferHandler: function () {
+      if (window.globals.currentOffer) {
+        window.globals.currentOffer.remove();
+      }
     }
   };
 
   // Массив с пинами
   var renderedPins = [];
   // Хранение эл-та с окном описания объявления
-  var currentOffer = null;
   var popupCloseButton = null;
   var mapCard = document.querySelector('.map');
   var adForm = document.querySelector('.ad-form');
@@ -37,6 +44,7 @@
   // Активация страницы
   var showUI = function () {
     window.getData(function () {
+      window.updateAds();
       renderPins(window.adAround, mapPins);
     });
     map.classList.remove('map--faded');
@@ -44,7 +52,6 @@
     for (var i = 0; i < adFormFieldsets.length; i++) {
       adFormFieldsets[i].disabled = false;
     }
-    // Отрисовка пинов
     mapPinMain.removeEventListener('mouseup', showUI);
   };
 
@@ -115,11 +122,11 @@
 
   // Удаление листенера при закрытии окна с объявлением
   var closeHandler = function () {
-    if (currentOffer && popupCloseButton) {
+    if (window.globals.currentOffer && popupCloseButton) {
       popupCloseButton.removeEventListener('click', closeHandler);
       document.removeEventListener('keydown', closeEventHandler);
-      currentOffer.remove();
-      currentOffer = null;
+      window.globals.currentOffer.remove();
+      window.globals.currentOffer = null;
       popupCloseButton = null;
     }
   };
@@ -131,26 +138,33 @@
   };
 
   // Рендер пинов, открытие объявления по клику на соотвествующий пин и закрытие
-  var renderPins = function (ads, target) {
+  var renderPins = window.render = function (ads, target) {
+    renderedPins.forEach(function (pin) {
+      pin.remove();
+    })
+    renderedPins = [];
     // Идем по массиву с объявлениями и создаем объекты для массива с пинами
     ads = ads || [];
-    ads.forEach(function (item) {
-      var pin = window.createPin(item);
-      fragment.appendChild(pin); // Добавляем во фрагмент каждый созданный пин
-      renderedPins.push(pin); // Добавляем в массив объект, с данными на каждый созданный пин
+    var i = 0;
+    ads.forEach(function(item) {
+      if (i < window.globals.MAX_PINS && i < ads.length) {
+        var pin = window.createPin(item);
+        fragment.appendChild(pin); // Добавляем во фрагмент каждый созданный пин
+        renderedPins.push(pin); // Добавляем в массив объект, с данными на каждый созданный пин
 
-      // Слушатель для открытия объявления по нажатию на пин
-      pin.addEventListener('click', function () {
-        if (currentOffer) {
-          currentOffer.remove(); // Вначале функции убираем объявление, если есть открытое
-        }
-        currentOffer = window.createCard(item); // Вызываем функцию создания карточки объявления для каждого объекта в массиве объявлений
-        popupCloseButton = currentOffer.querySelector('.popup__close');
-        popupCloseButton.addEventListener('click', closeHandler); // Добавляем слушатель для закрытия по нажатию на крестик
-        document.addEventListener('keydown', closeEventHandler);
-        mapCard.insertBefore(currentOffer, filterContainer); // Добавлем в разметку выбранную карточку-объявление
-      });
-    });
+        // Слушатель для открытия объявления по нажатию на пин
+        pin.addEventListener('click', function (evt) {
+
+          window.globals.currentOfferHandler();
+          window.globals.currentOffer = window.createCard(item); // Вызываем функцию создания карточки объявления для каждого объекта в массиве объявлений
+          popupCloseButton = window.globals.currentOffer.querySelector('.popup__close');
+          popupCloseButton.addEventListener('click', closeHandler); // Добавляем слушатель для закрытия по нажатию на крестик
+          document.addEventListener('keydown', closeEventHandler);
+          mapCard.insertBefore(window.globals.currentOffer, filterContainer); // Добавлем в разметку выбранную карточку-объявление
+        });
+      }
+      i++
+    })
     target.appendChild(fragment);
   };
 })();
