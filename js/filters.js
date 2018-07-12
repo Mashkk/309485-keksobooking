@@ -14,15 +14,18 @@
   var guestsFilter = filters.querySelector('#housing-guests');
   var checkboxes = filters.querySelectorAll('input[type="checkbox"]');
   var DEBOUNCE_INTERVAL = 500;
-  
-  var removeItem = function(array, item){
-    var index = array.indexOf(item);
-    if (index !== -1) array.splice(index, 1);
-  }
+  var lastTimeout;
 
-  var filterAds = function(ads) {
+  var removeItem = function (array, item) {
+    var index = array.indexOf(item);
+    if (index !== -1) {
+      array.splice(index, 1);
+    }
+  };
+
+  var filterAds = function (ads) {
     var filteredAds = ads.slice();
-    ads.forEach(function(data){
+    ads.forEach(function (data) {
       if (typeFilter.value !== data.offer.type && typeFilter.value !== 'any') {
         removeItem(filteredAds, data);
       }
@@ -35,61 +38,61 @@
         removeItem(filteredAds, data);
       }
 
-      if (parseInt(roomsFilter.value) !== data.offer.rooms && roomsFilter.value !== 'any') {
+      if (parseInt(roomsFilter.value, 10) !== data.offer.rooms && roomsFilter.value !== 'any') {
         removeItem(filteredAds, data);
-      } 
-  
-      if (data.offer.guests !== parseInt(guestsFilter.value) && guestsFilter.value !== 'any')  {
+      }
+
+      if (data.offer.guests !== parseInt(guestsFilter.value, 10) && guestsFilter.value !== 'any') {
         removeItem(filteredAds, data);
-      } 
+      }
 
       checkboxes.forEach(function (checkbox) {
         if (checkbox.checked) {
           if (!gotFeature(data.offer.features, checkbox.value)) {
             removeItem(filteredAds, data);
           }
-        }  
+        }
       });
-    })    
+    });
     return filteredAds;
   };
 
 
-  var gotFeature = function (features,  val) {
-    return features.indexOf(val) != -1;
-  }
+  var gotFeature = function (features, val) {
+    return features.indexOf(val) !== -1;
+  };
 
   var updateAds = window.updateAds = function () {
     var sorted = filterAds(window.adAround);
     window.globals.currentOfferHandler();
     window.render(sorted, mapPins);
-  }
-  var lastTimeout;
+  };
+
   var debounce = function (fun) {
     if (lastTimeout) {
       window.clearTimeout(lastTimeout);
     }
     lastTimeout = window.setTimeout(fun, DEBOUNCE_INTERVAL);
-  }
+  };
 
-  typeFilter.addEventListener('change', function(evt) {
+  typeFilter.addEventListener('change', function () {
     debounce(updateAds);
   });
-  priceFilter.addEventListener('change', function(evt) {
+  priceFilter.addEventListener('change', function () {
     debounce(updateAds);
   });
-  typeFilter.addEventListener('change', function(evt) {
+  typeFilter.addEventListener('change', function () {
     debounce(updateAds);
   });
-  roomsFilter.addEventListener('change', function(evt) {
+  roomsFilter.addEventListener('change', function () {
     debounce(updateAds);
   });
-  guestsFilter.addEventListener('change', function(evt) {
+  guestsFilter.addEventListener('change', function () {
     debounce(updateAds);
   });
-  checkboxes.forEach (function (checkbox) {
-    checkbox.addEventListener('change', function(evt) {
+  checkboxes.forEach(function (checkbox) {
+    checkbox.addEventListener('change', function () {
       debounce(updateAds);
-    })
+    });
   });
 })();

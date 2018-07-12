@@ -13,6 +13,7 @@
     PIN_WIDTH: 62,
     MAP_WIDTH: 1200,
     ESC_KEYCODE: 27,
+    MAX_PINS: 5,
     setInitAddress: function () {
       return (mapPinMain.offsetLeft + window.globals.PIN_WIDTH / 2) + ' ' + (mapPinMain.offsetTop + window.globals.PIN_HEIGHT);
     },
@@ -20,8 +21,6 @@
       mapPinMain.style.top = 375 + 'px';
       mapPinMain.style.left = 570 + 'px';
     },
-    MAX_PINS: 5,
-
     currentOffer: null,
     currentOfferHandler: function () {
       if (window.globals.currentOffer) {
@@ -67,7 +66,8 @@
     window.adAround = [];
     renderedPins.forEach(function (pin) {
       pin.remove();
-    })
+    });
+    window.globals.currentOfferHandler();
     renderedPins = [];
     mapPinMain.addEventListener('mouseup', showUI);
     window.scrollTo(0, 0);
@@ -141,20 +141,19 @@
   var renderPins = window.render = function (ads, target) {
     renderedPins.forEach(function (pin) {
       pin.remove();
-    })
+    });
     renderedPins = [];
     // Идем по массиву с объявлениями и создаем объекты для массива с пинами
     ads = ads || [];
     var i = 0;
-    ads.forEach(function(item) {
+    ads.forEach(function (item) {
       if (i < window.globals.MAX_PINS && i < ads.length) {
         var pin = window.createPin(item);
         fragment.appendChild(pin); // Добавляем во фрагмент каждый созданный пин
         renderedPins.push(pin); // Добавляем в массив объект, с данными на каждый созданный пин
 
         // Слушатель для открытия объявления по нажатию на пин
-        pin.addEventListener('click', function (evt) {
-
+        pin.addEventListener('click', function () {
           window.globals.currentOfferHandler();
           window.globals.currentOffer = window.createCard(item); // Вызываем функцию создания карточки объявления для каждого объекта в массиве объявлений
           popupCloseButton = window.globals.currentOffer.querySelector('.popup__close');
@@ -163,8 +162,8 @@
           mapCard.insertBefore(window.globals.currentOffer, filterContainer); // Добавлем в разметку выбранную карточку-объявление
         });
       }
-      i++
-    })
+      i++;
+    });
     target.appendChild(fragment);
   };
 })();

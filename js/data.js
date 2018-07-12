@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  // var _data;
   var DOWNLOAD_URL = 'https://js.dump.academy/keksobooking/data';
   var UPLOAD_URL = 'https://js.dump.academy/keksobooking';
   var loadHandler = function (data, cb) {
@@ -27,13 +26,12 @@
   window.getData = function (cb) {
     window.load(loadHandler, errorHandler, DOWNLOAD_URL, cb);
   };
-  //                            form  elements инфо об успешной отправке
+
   window.uploadData = function (data, cb) {
-    //                      формдата   онлоад - когда загружен контент на сервер
+
     window.upload(new FormData(data), function (response, callback) {
       window.globals.pinInitCoord();
       window.globals.form.reset();
-      console.log(1);
       callback();
     }, UPLOAD_URL, errorHandler, cb);
   };

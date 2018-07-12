@@ -50,7 +50,7 @@
     description: description,
     address: address,
     checkbox: checkbox
-  }
+  };
 
   window.globals.form = {
     reset: function () {
@@ -67,14 +67,14 @@
         checkbox[i].checked = false;
       }
     }
-  }
+  };
   // Отправка формы
   form.addEventListener('submit', function (evt) {
-    window.uploadData(form, function(){
+    window.uploadData(form, function () {
       successMessage.classList.remove('hidden');
       document.addEventListener('click', closeSuccessHandler);
       document.addEventListener('keydown', closeSuccessEventHandler);
-    })
+    });
     window.globals.hideUI();
     evt.preventDefault();
   });
@@ -96,7 +96,7 @@
     evt.preventDefault();
     window.globals.pinInitCoord();
     window.globals.form.reset();
-  })
+  });
 
   // Валидация полей кол-ва-гостей и комнат
   var roomSelectHandler = function () {
