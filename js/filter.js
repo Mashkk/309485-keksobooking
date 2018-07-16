@@ -2,19 +2,23 @@
 
 (function () {
   var mapPins = document.querySelector('.map__pins');
-  var filters = document.querySelector('.map__filters');
-  var typeFilter = filters.querySelector('#housing-type');
-  var priceFilter = filters.querySelector('#housing-price');
+  var filterForm = document.querySelector('.map__filters');
+  var typeFilter = filterForm.querySelector('#housing-type');
+  var priceFilter = filterForm.querySelector('#housing-price');
   var priceMap = {
     low: 10000,
     middle: 50000,
     high: 50000
   };
-  var roomsFilter = filters.querySelector('#housing-rooms');
-  var guestsFilter = filters.querySelector('#housing-guests');
-  var checkboxes = filters.querySelectorAll('input[type="checkbox"]');
+  var roomsFilter = filterForm.querySelector('#housing-rooms');
+  var guestsFilter = filterForm.querySelector('#housing-guests');
+  var checkboxes = filterForm.querySelectorAll('input[type="checkbox"]');
   var DEBOUNCE_INTERVAL = 500;
   var lastTimeout;
+
+  window.globals.filter = {
+    filterForm: filterForm
+  };
 
   var removeItem = function (array, item) {
     var index = array.indexOf(item);
@@ -64,8 +68,8 @@
 
   var updateAds = window.updateAds = function () {
     var sorted = filterAds(window.adAround);
-    window.globals.currentOfferHandler();
-    window.render(sorted, mapPins);
+    window.globals.map.currentOfferHandler();
+    window.globalFunction.render(sorted, mapPins);
   };
 
   var debounce = function (fun) {
@@ -75,24 +79,25 @@
     lastTimeout = window.setTimeout(fun, DEBOUNCE_INTERVAL);
   };
 
-  typeFilter.addEventListener('change', function () {
+  var filterHandler = function () {
     debounce(updateAds);
-  });
-  priceFilter.addEventListener('change', function () {
+  };
+
+  var removeFilterEl = function () {
+    filterForm.removeEventListener('change', changeHandler);
+  };
+
+  var addFilterEl = function () {
+    filterForm.addEventListener('change', changeHandler);
+  };
+
+  var changeHandler = function () {
     debounce(updateAds);
-  });
-  typeFilter.addEventListener('change', function () {
-    debounce(updateAds);
-  });
-  roomsFilter.addEventListener('change', function () {
-    debounce(updateAds);
-  });
-  guestsFilter.addEventListener('change', function () {
-    debounce(updateAds);
-  });
-  checkboxes.forEach(function (checkbox) {
-    checkbox.addEventListener('change', function () {
-      debounce(updateAds);
-    });
+  };
+
+  Object.assign(window.globalFunction, {
+    filterHandler: filterHandler,
+    removeFilterEl: removeFilterEl,
+    addFilterEl: addFilterEl
   });
 })();

@@ -23,26 +23,19 @@
     node.className = 'errorMessage';
     document.body.insertAdjacentElement('afterbegin', node);
   };
-  window.getData = function (cb) {
-    window.load(loadHandler, errorHandler, DOWNLOAD_URL, cb);
+  var getData = function (cb) {
+    window.globalFunction.load(loadHandler, errorHandler, DOWNLOAD_URL, cb);
   };
 
-  window.uploadData = function (data, cb) {
-
-    window.upload(new FormData(data), function (response, callback) {
-      window.globals.pinInitCoord();
-      window.globals.form.reset();
+  var uploadData = function (data, cb) {
+    window.globalFunction.upload(new FormData(data), function (callback) {
+      window.globalFunction.resetForm();
       callback();
     }, UPLOAD_URL, errorHandler, cb);
   };
 
-  var ads = null;
-  window.data = {
-    get: function () {
-      return ads;
-    },
-    set: function (newAds) {
-      ads = newAds;
-    }
-  };
+  Object.assign(window.globalFunction, {
+    getData: getData,
+    uploadData: uploadData
+  });
 })();

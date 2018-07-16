@@ -52,30 +52,15 @@
     checkbox: checkbox
   };
 
-  window.globals.form = {
-    reset: function () {
-      elements.title.value = '';
-      elements.checkin.value = '12:00';
-      elements.checkout.value = '12:00';
-      elements.roomNumber.value = '1';
-      elements.capacity.value = '1';
-      elements.price.value = '';
-      elements.type.value = 'flat';
-      elements.description.value = '';
-      elements.address.value = window.globals.setInitAddress();
-      for (var i = 0; i < checkbox.length; i++) {
-        checkbox[i].checked = false;
-      }
-    }
-  };
   // Отправка формы
   form.addEventListener('submit', function (evt) {
-    window.uploadData(form, function () {
+    window.globalFunction.uploadData(form, function () {
       successMessage.classList.remove('hidden');
       document.addEventListener('click', closeSuccessHandler);
       document.addEventListener('keydown', closeSuccessEventHandler);
     });
-    window.globals.hideUI();
+    window.globals.filter.filterForm.reset();
+    window.globalFunction.hideUI();
     evt.preventDefault();
   });
 
@@ -86,16 +71,23 @@
   };
 
   var closeSuccessEventHandler = function (evt) {
-    if (evt.keyCode === window.globals.ESC_KEYCODE) {
+    if (evt.keyCode === window.globals.map.ESC_KEYCODE) {
       closeSuccessHandler();
     }
+  };
+
+  var resetForm = function () {
+    form.reset();
+    elements.address.value = window.globals.map.setInitAddress();
   };
 
   // Reset
   resetButton.addEventListener('click', function (evt) {
     evt.preventDefault();
-    window.globals.pinInitCoord();
-    window.globals.form.reset();
+    window.globals.map.pinInitCoord();
+    resetForm();
+    window.globals.filter.filterForm.reset();
+    window.globalFunction.hideUI();
   });
 
   // Валидация полей кол-ва-гостей и комнат
@@ -141,5 +133,9 @@
     } else {
       price.setCustomValidity('');
     }
+  });
+
+  Object.assign(window.globalFunction, {
+    resetForm: resetForm
   });
 })();
