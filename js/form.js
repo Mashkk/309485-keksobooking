@@ -26,6 +26,7 @@
     'palace': '10000'
   };
   var form = document.querySelector('.ad-form');
+  var resetButton = document.querySelector('.ad-form__reset');
   var title = form.querySelector('#title');
   var checkin = form.querySelector('#timein');
   var checkout = form.querySelector('#timeout');
@@ -34,30 +35,68 @@
   var price = form.querySelector('#price');
   var type = form.querySelector('#type');
   var description = form.querySelector('#description');
-  var UPLOAD_URL = 'https://js.dump.academy/keksobooking';
+  var address = form.querySelector('#address');
+  var checkbox = form.querySelectorAll('input[type="checkbox"]');
+
+  var successMessage = document.querySelector('.success');
+  var elements = {
+    title: title,
+    checkin: checkin,
+    checkout: checkout,
+    roomNumber: roomNumber,
+    capacity: capacity,
+    price: price,
+    type: type,
+    description: description,
+    address: address,
+    checkbox: checkbox
+  };
 
   // Отправка формы
   form.addEventListener('submit', function (evt) {
-    window.upload(new FormData(form), function () {
-      title.value = '';
-      checkin.value = '12:00';
-      checkout.value = '12:00';
-      roomNumber.value = '1';
-      capacity.value = '1';
-      price.value = '';
-      type.value = 'flat';
-      description.value = '';
-    }, UPLOAD_URL);
+    window.globalFunction.uploadData(form, function () {
+      successMessage.classList.remove('hidden');
+      document.addEventListener('click', closeSuccessHandler);
+      document.addEventListener('keydown', closeSuccessEventHandler);
+    });
+    window.globals.filter.filterForm.reset();
+    window.globalFunction.hideUI();
     evt.preventDefault();
+  });
+
+  var closeSuccessHandler = function () {
+    document.removeEventListener('click', closeSuccessHandler);
+    document.removeEventListener('keydown', closeSuccessEventHandler);
+    successMessage.classList.add('hidden');
+  };
+
+  var closeSuccessEventHandler = function (evt) {
+    if (evt.keyCode === window.globals.map.ESC_KEYCODE) {
+      closeSuccessHandler();
+    }
+  };
+
+  var resetForm = function () {
+    form.reset();
+    elements.address.value = window.globals.map.setInitAddress();
+  };
+
+  // Reset
+  resetButton.addEventListener('click', function (evt) {
+    evt.preventDefault();
+    window.globals.map.pinInitCoord();
+    resetForm();
+    window.globals.filter.filterForm.reset();
+    window.globalFunction.hideUI();
   });
 
   // Валидация полей кол-ва-гостей и комнат
   var roomSelectHandler = function () {
-    var selectedCapacity = selector[roomNumber.value].capacity;// Получаем значение value option гостей и берем значение capacity соответствущего объекта
-    if (selectedCapacity.indexOf(capacity.value) === -1) { // Проверка на отсутствие в этом массиве значения value гостей
-      capacity.setCustomValidity(selector[roomNumber.value].error); // Вывод соотвествующего предупреждения об ошибке
+    var selectedCapacity = selector[roomNumber.value].capacity;
+    if (selectedCapacity.indexOf(capacity.value) === -1) {
+      capacity.setCustomValidity(selector[roomNumber.value].error);
     } else {
-      capacity.setCustomValidity(''); // Сброс предупреждения
+      capacity.setCustomValidity('');
     }
   };
   // Подписываемся на изменения select гостей и комнат
@@ -94,5 +133,9 @@
     } else {
       price.setCustomValidity('');
     }
+  });
+
+  Object.assign(window.globalFunction, {
+    resetForm: resetForm
   });
 })();
