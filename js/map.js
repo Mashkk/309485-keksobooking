@@ -111,7 +111,6 @@
         // Проверка на область координат
         if (moveEvt.clientX >= (map.offsetLeft + window.globals.map.PIN_WIDTH / 2) && moveEvt.clientX <= (map.offsetLeft + constants.MAP_WIDTH - window.globals.map.PIN_WIDTH / 2) && regulationCoordsY >= INDENT_TOP && regulationCoordsY <= INDENT_BOTTOM) {
           startCoords = {
-            // Перезаписываем стартовые координаты
             x: moveEvt.clientX,
             y: moveEvt.clientY
           };
@@ -136,7 +135,6 @@
   // Удаление листенера при закрытии окна с объявлением
   var closeHandler = function () {
     if (window.globals.map.currentOffer && popupCloseButton) {
-      popupCloseButton.removeEventListener('click', closeHandler);
       document.removeEventListener('keydown', closeEventHandler);
       window.globals.map.currentOffer.remove();
       window.globals.map.currentOffer = null;
@@ -178,22 +176,20 @@
       pin.remove();
     });
     renderedPins = [];
-    // Идем по массиву с объявлениями и создаем объекты для массива с пинами
     ads = ads || [];
     var renderedAds = getRandom(ads, constants.MAX_PINS);
     renderedAds.forEach(function (item) {
       var pin = window.createPin(item);
-      fragment.appendChild(pin); // Добавляем во фрагмент каждый созданный пин
-      renderedPins.push(pin); // Добавляем в массив объект, с данными на каждый созданный пин
+      fragment.appendChild(pin);
+      renderedPins.push(pin);
 
-      // Слушатель для открытия объявления по нажатию на пин
       pin.addEventListener('click', function () {
         window.globals.map.currentOfferHandler();
-        window.globals.map.currentOffer = window.createCard(item); // Вызываем функцию создания карточки объявления для каждого объекта в массиве объявлений
+        window.globals.map.currentOffer = window.createCard(item);
         popupCloseButton = window.globals.map.currentOffer.querySelector('.popup__close');
-        popupCloseButton.addEventListener('click', closeHandler); // Добавляем слушатель для закрытия по нажатию на крестик
+        popupCloseButton.addEventListener('click', closeHandler);
         document.addEventListener('keydown', closeEventHandler);
-        mapCard.insertBefore(window.globals.map.currentOffer, filterContainer); // Добавлем в разметку выбранную карточку-объявление
+        mapCard.insertBefore(window.globals.map.currentOffer, filterContainer);
       });
     });
     target.appendChild(fragment);

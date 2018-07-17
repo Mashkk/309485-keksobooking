@@ -1,8 +1,6 @@
 'use strict';
 
 (function () {
-  var DOWNLOAD_URL = 'https://js.dump.academy/keksobooking/data';
-  var UPLOAD_URL = 'https://js.dump.academy/keksobooking';
   var loadHandler = function (data, cb) {
     window.adAround = data;
     cb();
@@ -10,6 +8,7 @@
 
   // Облако ошибки
   var errorHandler = function (errorMessage) {
+    var TIMEOUT = 3000;
     var node = document.createElement('div');
     node.style = 'z-index: 100; margin: 0 auto; padding: 20px; text-align: center; background-color: white; color: red; border-radius: 10px; border: 1px solid #c0c0c0';
     node.style.position = 'absolute';
@@ -20,18 +19,22 @@
     node.style.height = 'auto';
 
     node.textContent = errorMessage;
-    node.className = 'errorMessage';
+    node.classList.add('errorMessage');
     document.body.insertAdjacentElement('afterbegin', node);
+
+    setTimeout(function () {
+      node.remove();
+    }, TIMEOUT);
   };
   var getData = function (cb) {
-    window.globalFunction.load(loadHandler, errorHandler, DOWNLOAD_URL, cb);
+    window.globalFunction.load(loadHandler, errorHandler, cb);
   };
 
   var uploadData = function (data, cb) {
     window.globalFunction.upload(new FormData(data), function (callback) {
       window.globalFunction.resetForm();
       callback();
-    }, UPLOAD_URL, errorHandler, cb);
+    }, errorHandler, cb);
   };
 
   Object.assign(window.globalFunction, {

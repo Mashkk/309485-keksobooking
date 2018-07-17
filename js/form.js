@@ -92,11 +92,11 @@
 
   // Валидация полей кол-ва-гостей и комнат
   var roomSelectHandler = function () {
-    var selectedCapacity = selector[roomNumber.value].capacity;// Получаем значение value option гостей и берем значение capacity соответствущего объекта
-    if (selectedCapacity.indexOf(capacity.value) === -1) { // Проверка на отсутствие в этом массиве значения value гостей
-      capacity.setCustomValidity(selector[roomNumber.value].error); // Вывод соотвествующего предупреждения об ошибке
+    var selectedCapacity = selector[roomNumber.value].capacity;
+    if (selectedCapacity.indexOf(capacity.value) === -1) {
+      capacity.setCustomValidity(selector[roomNumber.value].error);
     } else {
-      capacity.setCustomValidity(''); // Сброс предупреждения
+      capacity.setCustomValidity('');
     }
   };
   // Подписываемся на изменения select гостей и комнат

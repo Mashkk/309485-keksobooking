@@ -74,9 +74,9 @@
 
   var debounce = function (fun) {
     if (lastTimeout) {
-      window.clearTimeout(lastTimeout);
+      clearTimeout(lastTimeout);
     }
-    lastTimeout = window.setTimeout(fun, DEBOUNCE_INTERVAL);
+    lastTimeout = setTimeout(fun, DEBOUNCE_INTERVAL);
   };
 
   var filterHandler = function () {

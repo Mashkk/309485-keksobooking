@@ -35,7 +35,7 @@
       node.remove();
     });
 
-    if (card.offer.features.length > 0) {
+    if (card.offer.features.length) {
       card.offer.features.forEach(function (item) {
         var featureLi = document.createElement('li');
         featureLi.classList.add('popup__feature');
@@ -50,7 +50,7 @@
     // Отрисовка 3х фото
     photosContainer.removeChild(cardPhoto);
 
-    if (card.offer.photos.length > 0) {
+    if (card.offer.photos.length) {
       card.offer.photos.forEach(function (photo) {
         var tempPhoto = cardPhoto.cloneNode();
         tempPhoto.src = photo;
