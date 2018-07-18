@@ -1,18 +1,18 @@
 'use strict';
 
 (function () {
-  var map = document.querySelector('.map');
-  var mapPinMain = document.querySelector('.map__pin--main');
-  var fragment = document.createDocumentFragment();
-  var filterContainer = document.querySelector('.map__filters-container');
 
-  // Константы
   var constants = {
     PIN_START_TOP: 375,
     PIN_START_LEFT: 570,
     MAX_PINS: 5,
     MAP_WIDTH: 1200
   };
+
+  var map = document.querySelector('.map');
+  var mapPinMain = document.querySelector('.map__pin--main');
+  var fragment = document.createDocumentFragment();
+  var filterContainer = document.querySelector('.map__filters-container');
 
   // Globals
   window.globals.map = {
