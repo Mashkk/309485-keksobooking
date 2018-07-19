@@ -34,11 +34,7 @@
   var price = form.querySelector('#price');
   var type = form.querySelector('#type');
   var address = form.querySelector('#address');
-
   var successMessage = document.querySelector('.success');
-  var elements = {
-    address: address
-  };
 
   // Отправка формы
   form.addEventListener('submit', function (evt) {
@@ -66,7 +62,7 @@
 
   var resetForm = function () {
     form.reset();
-    elements.address.value = window.globals.map.setInitAddress();
+    address.value = window.globals.map.setInitAddress();
   };
 
   // Reset
