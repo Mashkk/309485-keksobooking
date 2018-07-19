@@ -2,7 +2,7 @@
 
 (function () {
   var loadHandler = function (data, cb) {
-    window.adAround = data;
+    window.adsAround = data;
     cb();
   };
 
@@ -31,10 +31,10 @@
   };
 
   var uploadData = function (data, cb) {
-    window.globalFunction.upload(new FormData(data), function (callback) {
+    window.globalFunction.upload(function (callback) {
       window.globalFunction.resetForm();
       callback();
-    }, errorHandler, cb);
+    }, errorHandler, new FormData(data), cb, true);
   };
 
   Object.assign(window.globalFunction, {

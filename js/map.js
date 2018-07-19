@@ -75,7 +75,7 @@
       input.disabled = true;
     });
 
-    window.adAround = [];
+    window.adsAround = [];
     renderedPins.forEach(function (pin) {
       pin.remove();
     });
@@ -87,50 +87,48 @@
   };
 
   // Drag & Drop
-  (function () {
-    mapPinMain.addEventListener('mousedown', function (evt) {
-      evt.preventDefault();
+  mapPinMain.addEventListener('mousedown', function (evt) {
+    evt.preventDefault();
 
-      // Объявляем стартовые координаты
-      var startCoords = {
-        x: evt.clientX,
-        y: evt.clientY
+    // Объявляем стартовые координаты
+    var startCoords = {
+      x: evt.clientX,
+      y: evt.clientY
+    };
+    // Высчитываем координаты после перемещения мыши
+    var mouseMoveHandler = function (moveEvt) {
+      moveEvt.preventDefault();
+      var shift = {
+        x: startCoords.x - moveEvt.clientX,
+        y: startCoords.y - moveEvt.clientY
       };
-      // Высчитываем координаты после перемещения мыши
-      var onMouseMove = function (moveEvt) {
-        moveEvt.preventDefault();
-        var shift = {
-          x: startCoords.x - moveEvt.clientX,
-          y: startCoords.y - moveEvt.clientY
+
+      var regulationCoordsY = mapPinMain.offsetTop - shift.y;
+      var INDENT_TOP = 130 - window.globals.map.PIN_HEIGHT;
+      var INDENT_BOTTOM = 630 - window.globals.map.PIN_HEIGHT;
+
+      // Проверка на область координат
+      if (moveEvt.clientX >= (map.offsetLeft + window.globals.map.PIN_WIDTH / 2) && moveEvt.clientX <= (map.offsetLeft + constants.MAP_WIDTH - window.globals.map.PIN_WIDTH / 2) && regulationCoordsY >= INDENT_TOP && regulationCoordsY <= INDENT_BOTTOM) {
+        startCoords = {
+          x: moveEvt.clientX,
+          y: moveEvt.clientY
         };
-
-        var regulationCoordsY = mapPinMain.offsetTop - shift.y;
-        var INDENT_TOP = 130 - window.globals.map.PIN_HEIGHT;
-        var INDENT_BOTTOM = 630 - window.globals.map.PIN_HEIGHT;
-
-        // Проверка на область координат
-        if (moveEvt.clientX >= (map.offsetLeft + window.globals.map.PIN_WIDTH / 2) && moveEvt.clientX <= (map.offsetLeft + constants.MAP_WIDTH - window.globals.map.PIN_WIDTH / 2) && regulationCoordsY >= INDENT_TOP && regulationCoordsY <= INDENT_BOTTOM) {
-          startCoords = {
-            x: moveEvt.clientX,
-            y: moveEvt.clientY
-          };
-          // Заполение поля адреса
-          formAddressInput.value = (mapPinMain.offsetLeft - shift.x + window.globals.map.PIN_WIDTH / 2) + ' ' + (mapPinMain.offsetTop - shift.y + window.globals.map.PIN_HEIGHT);
-          // Меняем координаты в CSS
-          mapPinMain.style.top = (mapPinMain.offsetTop - shift.y) + 'px';
-          mapPinMain.style.left = (mapPinMain.offsetLeft - shift.x) + 'px';
-        }
-      };
-      // Drop
-      var onMouseUp = function (upEvt) {
-        upEvt.preventDefault();
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp);
-      };
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
-    });
-  })();
+        // Заполение поля адреса
+        formAddressInput.value = (mapPinMain.offsetLeft - shift.x + window.globals.map.PIN_WIDTH / 2) + ' ' + (mapPinMain.offsetTop - shift.y + window.globals.map.PIN_HEIGHT);
+        // Меняем координаты в CSS
+        mapPinMain.style.top = (mapPinMain.offsetTop - shift.y) + 'px';
+        mapPinMain.style.left = (mapPinMain.offsetLeft - shift.x) + 'px';
+      }
+    };
+    // Drop
+    var mouseUPHandler = function (upEvt) {
+      upEvt.preventDefault();
+      document.removeEventListener('mousemove', mouseMoveHandler);
+      document.removeEventListener('mouseup', mouseUPHandler);
+    };
+    document.addEventListener('mousemove', mouseMoveHandler);
+    document.addEventListener('mouseup', mouseUPHandler);
+  });
 
   // Удаление листенера при закрытии окна с объявлением
   var closeHandler = function () {

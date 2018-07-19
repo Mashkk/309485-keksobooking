@@ -27,29 +27,17 @@
   };
   var form = document.querySelector('.ad-form');
   var resetButton = document.querySelector('.ad-form__reset');
-  var title = form.querySelector('#title');
   var checkin = form.querySelector('#timein');
   var checkout = form.querySelector('#timeout');
   var roomNumber = form.querySelector('#room_number');
   var capacity = form.querySelector('#capacity');
   var price = form.querySelector('#price');
   var type = form.querySelector('#type');
-  var description = form.querySelector('#description');
   var address = form.querySelector('#address');
-  var checkbox = form.querySelectorAll('input[type="checkbox"]');
 
   var successMessage = document.querySelector('.success');
   var elements = {
-    title: title,
-    checkin: checkin,
-    checkout: checkout,
-    roomNumber: roomNumber,
-    capacity: capacity,
-    price: price,
-    type: type,
-    description: description,
-    address: address,
-    checkbox: checkbox
+    address: address
   };
 
   // Отправка формы

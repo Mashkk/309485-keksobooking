@@ -5,7 +5,7 @@
   var filterForm = document.querySelector('.map__filters');
   var typeFilter = filterForm.querySelector('#housing-type');
   var priceFilter = filterForm.querySelector('#housing-price');
-  var priceMap = {
+  var PriceMap = {
     low: 10000,
     middle: 50000,
     high: 50000
@@ -34,11 +34,11 @@
         removeItem(filteredAds, data);
       }
 
-      if (data.offer.price > priceMap[priceFilter.value] && priceMap[priceFilter.value] === priceMap.low) {
+      if (data.offer.price > PriceMap[priceFilter.value] && priceFilter.value === 'low') {
         removeItem(filteredAds, data);
-      } else if (data.offer.price > priceMap.high || data.offer.price < priceMap.low && priceFilter.value === 'middle') {
+      } else if (data.offer.price > PriceMap.high || data.offer.price < PriceMap.low && priceFilter.value === 'middle') {
         removeItem(filteredAds, data);
-      } else if (data.offer.price < priceMap[priceFilter.value] && priceMap[priceFilter.value] === priceMap.high) {
+      } else if (data.offer.price < PriceMap[priceFilter.value] && priceFilter.value === 'high') {
         removeItem(filteredAds, data);
       }
 
@@ -66,8 +66,8 @@
     return features.indexOf(val) !== -1;
   };
 
-  var updateAds = window.updateAds = function () {
-    var sorted = filterAds(window.adAround);
+  var updateAds = function () {
+    var sorted = filterAds(window.adsAround);
     window.globals.map.currentOfferHandler();
     window.globalFunction.render(sorted, mapPins);
   };
@@ -98,6 +98,6 @@
   Object.assign(window.globalFunction, {
     filterHandler: filterHandler,
     removeFilterEl: removeFilterEl,
-    addFilterEl: addFilterEl
+    addFilterEl: addFilterEl,
   });
 })();
